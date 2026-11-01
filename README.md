@@ -45,14 +45,19 @@ python3 scripts/scan.py mode enforce
 
 ## Install
 
-From a checkout:
+This repo is its own local marketplace (`.claude-plugin/marketplace.json`).
 
 ```
-claude plugin add /path/to/janitor --plugin-dir   # or add via /plugin → browse
+claude plugin marketplace add ~/Code/janitor
+claude plugin install janitor@viper-local
 ```
 
-Once enabled, hooks + skill are active in every project on the machine. To
-share: push this repo; others install it the same way (or via a marketplace).
+Once enabled, hooks + skill are active in every project on the machine.
+To share: push the repo, then others install with:
+
+```
+/plugin install janitor --marketplace <owner>/<repo>
+```
 
 ## CLI
 
