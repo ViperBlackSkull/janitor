@@ -30,9 +30,9 @@ instead of edited. The registry (`scripts/rules.json`) still exists — but as
 2. **Trash, never delete.** Everything lands in
    `~/.local/share/janitor-trash/<project>/<timestamp>/` with a manifest;
    `scan.py restore` reverses any batch.
-3. **Report-only by default.** `--apply` trashes Tier 1 (provable accidents,
-   regenerable caches) only. Tier 2 needs duplicate verification, Tier 3 needs
-   a human — both are forever report-only in the script.
+3. **Report-only by default.** Mode `report` (the default) lets the agent
+   investigate and propose but trash nothing; `enforce` unlocks the authority
+   ladder. `--apply` (batch tier-1 trash) still exists for script-only runs.
 4. **Hard allowlist + mtime guard.** Credentials, notes, config files,
    `loot/`, `writeup/`, state files, and anything modified in the last 4 hours
    are untouchable.
@@ -44,10 +44,14 @@ instead of edited. The registry (`scripts/rules.json`) still exists — but as
 
 Hooks read `~/.config/janitor/config.json` (`{"mode": "report"}` by default):
 
-| mode | PreToolUse (Bash) | PostToolUse (Bash) | Stop |
+| mode | PreToolUse (Bash) | PostToolUse (Bash) | Stop (command + agent) |
 | --- | --- | --- | --- |
-| `report` | observes NUL redirects, allows | annotates fresh junk | one-line census if junk exists |
-| `enforce` | denies NUL redirects with a fix hint | trashes fresh Tier-1 junk | census |
+| `report` | observes NUL redirects, allows | annotates fresh junk | census; agent watch replies "passive" |
+| `enforce` | denies NUL redirects with a fix hint | trashes fresh Tier-1 junk | census; agent watch investigates and, if ≥5 junk items, tells the main agent to run the janitor skill |
+
+The Stop agent hook is experimental (`type: "agent"`) and runs a small model
+call per turn end — remove its block from `hooks/hooks.json` if you don't want
+always-on agentic review.
 
 ```
 python3 scripts/scan.py mode enforce

@@ -8,7 +8,7 @@
     {
       "name": "janitor",
       "source": "./",
-      "description": "Registry-only workspace junk scanner. Hooks block/report junk as it is created; the skill does verified deep cleans. Trash, never delete.",
+      "description": "AI janitor agent for workspace cleanup — LLM judgment over safe trash verbs, agent-hook watch, never deletes.",
       "version": "0.1.0"
     }
   ]
