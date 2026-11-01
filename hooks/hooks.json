@@ -31,6 +31,12 @@
             "type": "command",
             "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/scan.py\" stop-report",
             "timeout": 20
+          },
+          {
+            "type": "agent",
+            "prompt": "You are the janitor watch agent (read-only; never modify anything). First Read ~/.config/janitor/config.json — if it is missing or mode is 'report', reply with exactly: janitor: passive. If mode is 'enforce', inspect the project at the hook's cwd using Glob/Grep/Read only for workspace junk: files named nul/null/nul^, __pycache__ or .pytest_cache dirs, path-flattened dumps (_home_*.txt), iteration clones like foo2.py/scan3.py, and numbered logs (x2.log). Ignore anything modified in the last 4 hours. If you find fewer than 5 items, or only regenerable caches, reply: janitor: passive. Otherwise reply ONE short line: 'janitor: N junk items (top examples) — run the janitor skill to clean.' Your reply is shown to the main agent as guidance; keep it under 25 words.",
+            "timeout": 60,
+            "statusMessage": "Janitor agent reviewing workspace…"
           }
         ]
       }

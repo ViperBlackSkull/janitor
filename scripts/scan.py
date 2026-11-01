@@ -353,6 +353,46 @@ def cmd_stop_report(args) -> int:
     return 0
 
 
+def cmd_trash_paths(args) -> int:
+    """The agent's ONLY mutation verb. Paths are re-validated against the hard
+    allowlist here — the caller's judgment does not override the verb."""
+    root = Path(args.root).resolve()
+    ignore = load_ignore(root)
+    entries, refused = [], []
+    for p_str in args.paths:
+        p = (Path(p_str) if Path(p_str).is_absolute() else root / p_str)
+        try:
+            p = p.resolve()
+            rel = p.relative_to(root)
+        except (ValueError, OSError):
+            refused.append((p_str, "outside project root"))
+            continue
+        if any(part in ALLOW_DIRS for part in rel.parts[:-1]):
+            refused.append((str(rel), "protected directory"))
+            continue
+        if is_allowed(p, root, ignore):
+            refused.append((str(rel), "hard allowlist"))
+            continue
+        if not p.exists():
+            refused.append((str(rel), "missing"))
+            continue
+        st = p.stat()
+        entries.append({"path": str(p), "rel": str(rel), "rule": f"agent:{args.reason}",
+                        "cause": "agent judgment", "bytes": st.st_size, "mtime": st.st_mtime})
+    applied = trash(root, entries) if entries else []
+    ok = 0
+    for r in applied:
+        if "error" in r:
+            print(f"REFUSED {r['rel']}: {r['error']}", file=sys.stderr)
+        else:
+            ok += 1
+            print(f"trashed {r['rel']} (reason: {args.reason})")
+    for rel, why in refused:
+        print(f"REFUSED {rel}: {why}", file=sys.stderr)
+    print(f"{ok} trashed, {len(refused)} refused — restore: scan.py restore {root} --latest")
+    return 1 if refused else 0
+
+
 # --- main ----------------------------------------------------------------------------
 def cmd_scan(args) -> int:
     mode = load_mode()
@@ -390,6 +430,12 @@ def main() -> int:
                    help="trash Tier-1 findings (recoverable via restore)")
     p.add_argument("--json", action="store_true")
     p.set_defaults(func=cmd_scan)
+
+    p = sub.add_parser("trash-paths", help="agent verb: trash explicit paths (allowlist-enforced)")
+    p.add_argument("root")
+    p.add_argument("paths", nargs="+")
+    p.add_argument("--reason", required=True)
+    p.set_defaults(func=cmd_trash_paths)
 
     p = sub.add_parser("restore", help="restore trashed files")
     p.add_argument("root", nargs="?", help="project path (default: all)")
