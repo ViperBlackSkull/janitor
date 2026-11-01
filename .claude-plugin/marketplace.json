@@ -1,7 +1,7 @@
 {
-  "name": "viper-local",
+  "name": "viper-black-skull",
   "owner": {
-    "name": "Viper",
+    "name": "ViperBlackSkull",
     "url": "https://github.com/ViperBlackSkull"
   },
   "plugins": [
@@ -9,7 +9,8 @@
       "name": "janitor",
       "source": "./",
       "description": "AI janitor agent for workspace cleanup — LLM judgment over safe trash verbs, agent-hook watch, never deletes.",
-      "version": "0.1.0"
+      "version": "0.2.0"
     }
   ]
 }
+

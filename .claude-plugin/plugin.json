@@ -1,10 +1,11 @@
 {
   "name": "janitor",
   "displayName": "Janitor",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "AI janitor agent for workspace cleanup — LLM judgment over safe trash verbs, agent-hook watch, never deletes.",
   "author": {
-    "name": "viper"
+    "name": "ViperBlackSkull",
+    "url": "https://github.com/ViperBlackSkull"
   },
   "license": "MIT",
   "keywords": ["cleanup", "hygiene", "hooks", "safety"]
